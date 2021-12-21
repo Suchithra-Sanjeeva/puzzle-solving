@@ -1,0 +1,62 @@
+import java.util.Scanner;
+
+/**
+ *  Box used to pack peanuts
+ *  A constructor and create a box with coordinates and size
+ */
+class Box {
+
+    double x1, y1, x2, y2;
+    String size;
+
+    public Box(double a, double b, double c, double d, String size) {
+        this.x1 = a;
+        this.y1 = b;
+        this.x2 = c;
+        this.y2 = d;
+        this.size = size;
+    }
+}
+
+/**
+ * The PeanutPacking
+ */
+public class PeanutPacking {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int numberOfBoxes = sc.nextInt();
+        while (numberOfBoxes != 0) {
+            Box[] boxes = new Box[numberOfBoxes];
+            for (int i = 0; i < numberOfBoxes; i++) {
+                boxes[i] = new Box(sc.nextDouble(), sc.nextDouble(), sc.nextDouble(), sc.nextDouble(), sc.next());
+            }
+            int numberOfPeanuts = sc.nextInt();
+            for (int i = 0; i < numberOfPeanuts; i++) {
+                double x = sc.nextDouble();
+                double y = sc.nextDouble();
+                String size = sc.next();
+                String inBox = inBox(x, y, boxes);
+                System.out.println(size + " " + (inBox.equals(size) ? "correct" : inBox));
+            }
+            System.out.println();
+            numberOfBoxes = sc.nextInt();
+        }
+    }
+
+    /**
+     * Checks if peanut is inside the box coordinates
+     * @param x
+     * @param y
+     * @param boxes
+     * @return box size if peanut is inside the box or "floor"
+     */
+    private static String inBox(double x, double y, Box[] boxes) {
+        for (Box box : boxes) {
+            if (x >= box.x1 && x <= box.x2 && y >= box.y1 && y <= box.y2)
+                return box.size;
+        }
+        return "floor";
+    }
+
+}
