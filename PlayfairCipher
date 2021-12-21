@@ -1,0 +1,142 @@
+import java.util.Scanner;
+
+/**
+ * The PlayfairCipher
+ */
+public class PlayfairCipher {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            int lines = Integer.parseInt(sc.nextLine());
+            if (lines <= 0)
+                break;
+            String key = sc.nextLine();
+            String filler = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+            key = replaceJWithI(key);
+            key = removeWhiteSpaceAndDuplicates(key, filler);
+            char[][] keyMatrix = new char[5][5];
+            int index = 0;
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 5; j++) {
+                    keyMatrix[i][j] = key.charAt(index++);
+                }
+            }
+            for (int i = 0; i < lines; i++) {
+                String plainText = sc.nextLine();
+                String plainTextPair = makePair(plainText);
+                System.out.println(encrypt(plainTextPair, keyMatrix));
+            }
+            System.out.println();
+        }
+    }
+
+    /**
+     * Encrypting the Plain Text
+     *
+     * @param plainTextPair
+     * @param keyMatrix
+     * @return encoded text
+     */
+    private static String encrypt(String plainTextPair, char[][] keyMatrix) {
+        char[] plainTextPairCharArray = plainTextPair.toCharArray();
+        for (int i = 0; i < plainTextPair.length(); i += 2) {
+            int a[] = findPosition(plainTextPair.charAt(i), plainTextPair.charAt(i + 1), keyMatrix);
+            if (a[0] != a[2] && a[1] != a[3]) {
+                plainTextPairCharArray[i] = keyMatrix[a[0]][a[3]];
+                plainTextPairCharArray[i + 1] = keyMatrix[a[2]][a[1]];
+            } else {
+                {
+                    plainTextPairCharArray[i] = keyMatrix[a[0]][a[1]];
+                    plainTextPairCharArray[i + 1] = keyMatrix[a[2]][a[3]];
+                }
+            }
+            if (plainTextPairCharArray[i] == 'X' && plainTextPairCharArray[i + 1] == 'X') {
+                plainTextPairCharArray[i] = 'Y';
+                plainTextPairCharArray[i + 1] = 'Y';
+            }
+        }
+        return new String(plainTextPairCharArray);
+    }
+
+    /**
+     * @param a
+     * @param b
+     * @param keyMatrix
+     * @return the position of the characters to replace the original characters on the text
+     */
+    private static int[] findPosition(char a, char b, char[][] keyMatrix) {
+        int[] y = new int[4];
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++) {
+                if (keyMatrix[i][j] == a) {
+                    y[0] = i;
+                    y[1] = j;
+                } else if (keyMatrix[i][j] == b) {
+                    y[2] = i;
+                    y[3] = j;
+                }
+            }
+        if (y[0] == y[2]) {
+            y[1]++;
+            y[3]++;
+        } else if (y[1] == y[3]) {
+            y[0]++;
+            y[2]++;
+        }
+        for (int i = 0; i < 4; i++)
+            y[i] %= 5;
+        return y;
+    }
+
+    /**
+     * Spaces ignored,  'J' replaces with 'I' and 'X' is added when both letters in the digraph are the same
+     *
+     * @param plainText
+     * @return plainTextPairs
+     */
+    private static String makePair(String plainText) {
+        String plainTextPair = "";
+        for (int i = 0; i < plainText.length(); i++) {
+            if (plainText.charAt(i) == ' ')
+                continue;
+            else if (plainText.charAt(i) == 'J')
+                plainTextPair += 'I';
+            else
+                plainTextPair += plainText.charAt(i);
+            if (i < plainText.length() - 1 && i % 2 == 0 && plainText.charAt(i) == plainText.charAt(i + 1))
+                plainTextPair += 'x';
+        }
+        if (plainTextPair.length() % 2 != 0)
+            plainTextPair += "x";
+        return plainTextPair.toUpperCase();
+    }
+
+    /**
+     * Replaces all occurrences of 'J' with 'I'
+     *
+     * @param key
+     * @return key
+     */
+    private static String replaceJWithI(String key) {
+        return key.toUpperCase().replaceAll("J", "I");
+    }
+
+    /**
+     * Removes all duplicate characters and spaces in key and filler text
+     *
+     * @param key
+     * @param filler
+     * @return key + filler without space and duplicate characters
+     */
+    private static String removeWhiteSpaceAndDuplicates(String key, String filler) {
+        char[] keyCharArray = key.concat(filler).toCharArray();
+        for (int i = 0; i < keyCharArray.length; i++)
+            for (int j = i + 1; j < keyCharArray.length; j++)
+                if (keyCharArray[i] == keyCharArray[j])
+                    keyCharArray[j] = ' ';
+        key = new String(keyCharArray);
+        key = key.replaceAll(" ", "");
+        return key;
+    }
+}
