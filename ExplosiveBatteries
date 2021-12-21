@@ -1,0 +1,31 @@
+import java.util.Scanner;
+
+/**
+ * The ExplosiveBatteries
+ */
+public class ExplosiveBatteries {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int knownThresholdLevel = sc.nextInt();
+        while (knownThresholdLevel != 0) {
+            System.out.println(getMinimumAttempts(knownThresholdLevel));
+            knownThresholdLevel = sc.nextInt();
+        }
+    }
+
+    /**
+     * checks minimum attempts required in worst case
+     *
+     * @param knownThresholdLevel, the current position at which the battery is known to explode
+     * @return minimum number of attempts required
+     */
+    private static int getMinimumAttempts(int knownThresholdLevel) {
+        /**
+         * x + (x-1) + (x-2).... + 1 = knownThresholdLevel
+         *
+         * x = (int) Math.ceil(Math.max(((-1 + Math.sqrt(1+8*(knownThresholdLevel-1)))/2),((-1 - Math.sqrt(1+8*(knownThresholdLevel-1))))/2));
+         *
+         */
+        return (int) Math.ceil(Math.max(((-1 + Math.sqrt(1 + 8 * (knownThresholdLevel - 1))) / 2), ((-1 - Math.sqrt(1 + 8 * (knownThresholdLevel - 1)))) / 2));
+    }
+}
